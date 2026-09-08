@@ -1,0 +1,227 @@
+{
+  "leads": [
+    {
+      "id": "lead-1",
+      "name": "Dr. Anand Mahindra",
+      "salutation": "Dr.",
+      "firstName": "Anand",
+      "lastName": "Mahindra",
+      "title": "Group Chairman & MD",
+      "company": "Tech Mahindra Automotive Cloud",
+      "email": "anand.m@techmahindra.com",
+      "phone": "+91 22 2490 1441",
+      "mobile": "+91 98200 11223",
+      "leadSource": "Seminar Partner",
+      "leadStatus": "Pre-Qualified",
+      "leadScore": 94,
+      "leadOwner": "Govind Choudhary",
+      "createdAt": "2025-03-01",
+      "annualRevenue": "₹85,00,00,000",
+      "industry": "Enterprise",
+      "city": "Mumbai",
+      "stateProvince": "Maharashtra",
+      "country": "India"
+    },
+    {
+      "id": "lead-2",
+      "name": "Roshni Nadar Malhotra",
+      "salutation": "Ms.",
+      "firstName": "Roshni",
+      "lastName": "Nadar Malhotra",
+      "title": "Chairperson",
+      "company": "HCL Technologies Global",
+      "email": "roshni.nadar@hcl.com",
+      "phone": "+91 120 430 6000",
+      "mobile": "+91 98110 33445",
+      "leadSource": "Trade Show",
+      "leadStatus": "Attempted to Contact",
+      "leadScore": 88,
+      "leadOwner": "Govind Choudhary",
+      "createdAt": "2025-03-02",
+      "annualRevenue": "₹1,20,00,00,000",
+      "industry": "IT Services",
+      "city": "Noida",
+      "stateProvince": "Uttar Pradesh",
+      "country": "India"
+    }
+  ],
+  "contacts": [
+    {
+      "id": "c-1",
+      "name": "Kris Marrier (Sample)",
+      "salutation": "Mr.",
+      "firstName": "Kris",
+      "lastName": "Marrier (Sample)",
+      "accountName": "King (Sample)",
+      "title": "Director of Procurement",
+      "department": "Purchasing",
+      "email": "kris.m@king-sample.com",
+      "phone": "+91 22 6655 4433",
+      "leadSource": "Advertisement",
+      "owner": "Govind Choudhary"
+    },
+    {
+      "id": "c-2",
+      "name": "Capla Paprocki (Sample)",
+      "salutation": "Ms.",
+      "firstName": "Capla",
+      "lastName": "Paprocki (Sample)",
+      "accountName": "Feltz Printing Service",
+      "title": "Operations Manager",
+      "department": "Operations",
+      "email": "capla@feltzprinting.com",
+      "phone": "+91 80 4433 2211",
+      "leadSource": "Cold Call",
+      "owner": "Govind Choudhary"
+    }
+  ],
+  "accounts": [
+    {
+      "id": "acc-1",
+      "name": "Fintech Nexus Labs",
+      "phone": "+91 22 6789 0000",
+      "website": "https://fintechnexus.in",
+      "industry": "Finance",
+      "annualRevenue": 450000000,
+      "owner": "Govind Choudhary",
+      "billingCity": "Mumbai",
+      "billingCountry": "India"
+    },
+    {
+      "id": "acc-2",
+      "name": "Apex Retail Solutions",
+      "phone": "+91 80 2345 6789",
+      "website": "https://apexretail.co.in",
+      "industry": "Retail",
+      "annualRevenue": 120000000,
+      "owner": "Govind Choudhary",
+      "billingCity": "Bengaluru",
+      "billingCountry": "India"
+    }
+  ],
+  "deals": [
+    {
+      "id": "deal-1",
+      "name": "Enterprise Cloud ERP Rollout",
+      "accountName": "Fintech Nexus Labs",
+      "contactName": "Kris Marrier (Sample)",
+      "amount": 4500000,
+      "stage": "Negotiation/Review",
+      "probability": 85,
+      "expectedCloseDate": "2025-04-15",
+      "dealOwner": "Govind Choudhary",
+      "pipeline": "Standard Sales Pipeline",
+      "leadSource": "Partner",
+      "daysInStage": 12,
+      "createdAt": "2025-02-10"
+    },
+    {
+      "id": "deal-2",
+      "name": "POS Infrastructure Modernization",
+      "accountName": "Apex Retail Solutions",
+      "contactName": "Capla Paprocki (Sample)",
+      "amount": 2800000,
+      "stage": "Proposal/Quote",
+      "probability": 65,
+      "expectedCloseDate": "2025-04-20",
+      "dealOwner": "Govind Choudhary",
+      "pipeline": "Standard Sales Pipeline",
+      "leadSource": "Cold Call",
+      "daysInStage": 8,
+      "createdAt": "2025-02-18"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-1",
+      "subject": "Register for upcoming CRM Webinars",
+      "dueDate": "Yesterday",
+      "isOverdue": true,
+      "status": "Not Started",
+      "priority": "Low",
+      "relatedTo": "King (Sample)",
+      "contactName": "Kris Marrier (Sample)",
+      "assignedTo": "Govind Choudhary"
+    },
+    {
+      "id": "task-2",
+      "subject": "Competitor Comparison Document",
+      "dueDate": "Late by 3 days",
+      "isOverdue": true,
+      "status": "Not Started",
+      "priority": "Highest",
+      "relatedTo": "Feltz Printing Service",
+      "contactName": "Capla Paprocki (Sample)",
+      "assignedTo": "Govind Choudhary"
+    },
+    {
+      "id": "task-3",
+      "subject": "Get Apporval from Manager",
+      "dueDate": "Late by 2 days",
+      "isOverdue": true,
+      "status": "Not Started",
+      "priority": "Low",
+      "relatedTo": "Chapman",
+      "contactName": "Simon Morasca (Sample)",
+      "assignedTo": "Govind Choudhary"
+    },
+    {
+      "id": "task-4",
+      "subject": "Get Approval from Manager",
+      "dueDate": "Today",
+      "isOverdue": false,
+      "status": "In Progress",
+      "priority": "Normal",
+      "relatedTo": "Commercial Press",
+      "contactName": "Leota Dilliard (Sample)",
+      "assignedTo": "Govind Choudhary"
+    },
+    {
+      "id": "task-5",
+      "subject": "Get Apporval from Manager",
+      "dueDate": "Today",
+      "isOverdue": false,
+      "status": "In Progress",
+      "priority": "High",
+      "relatedTo": "King (Sample)",
+      "contactName": "Kris Marrier (Sample)",
+      "assignedTo": "Govind Choudhary"
+    },
+    {
+      "id": "task-6",
+      "subject": "Customize CRM to your needs",
+      "dueDate": "Today",
+      "isOverdue": false,
+      "status": "In Progress",
+      "priority": "Normal",
+      "relatedTo": "Benton",
+      "contactName": "John Butt (Sample)",
+      "assignedTo": "Govind Choudhary"
+    }
+  ],
+  "meetings": [
+    {
+      "id": "meet-1",
+      "subject": "Q2 Strategy & Pipeline Review",
+      "startDateTime": "2025-03-10 10:00 AM",
+      "endDateTime": "2025-03-10 11:00 AM",
+      "location": "Zoho Meeting Room 4",
+      "relatedTo": "Fintech Nexus Labs",
+      "host": "Govind Choudhary",
+      "attendeesCount": 4
+    }
+  ],
+  "calls": [
+    {
+      "id": "call-1",
+      "subject": "Demo follow-up call with Capla Paprocki",
+      "callType": "Outbound",
+      "callDuration": "18 mins",
+      "callStartTime": "Today, 03:30 PM",
+      "relatedTo": "Feltz Printing Service",
+      "purpose": "Product Demo Feedback",
+      "callResult": "Positive Interest",
+      "caller": "Govind Choudhary"
+    }
+  ]
+}
