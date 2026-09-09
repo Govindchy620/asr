@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
   ModuleType,
   ViewMode,
@@ -26,34 +26,9 @@ import {
   Project,
   AgentConfig,
   ReportItem,
-  AnalyticsWidget
+  AnalyticsWidget,
 } from '../types/crm';
-import {
-  INITIAL_LEADS,
-  INITIAL_DEALS,
-  INITIAL_CONTACTS,
-  INITIAL_ACCOUNTS,
-  INITIAL_TASKS,
-  INITIAL_MEETINGS,
-  INITIAL_CALLS,
-  INITIAL_CAMPAIGNS,
-  INITIAL_PRODUCTS,
-  INITIAL_PRICEBOOKS,
-  INITIAL_QUOTES,
-  INITIAL_SALES_ORDERS,
-  INITIAL_PURCHASE_ORDERS,
-  INITIAL_INVOICES,
-  INITIAL_VENDORS,
-  INITIAL_FORECASTS,
-  INITIAL_DOCUMENTS,
-  INITIAL_VISITS,
-  INITIAL_SERVICES,
-  INITIAL_PROJECTS,
-  INITIAL_AGENTS,
-  INITIAL_REPORTS,
-  INITIAL_ANALYTICS_WIDGETS,
-  INITIAL_TIMELINE
-} from '../data/mockData';
+import api from '../services/api';
 
 interface CRMContextType {
   activeModule: ModuleType;
@@ -72,6 +47,7 @@ interface CRMContextType {
   setIsCreateModalOpen: (open: boolean) => void;
   createModalModule: ModuleType;
   openCreateModal: (module?: ModuleType) => void;
+  isLoading: boolean;
 
   // Data Store
   leads: Lead[];
@@ -103,34 +79,37 @@ interface CRMContextType {
   setIsCreateDashboardModalOpen: (open: boolean) => void;
   timeline: Record<string, ActivityTimelineItem[]>;
 
-  // Generic and specific creation methods
-  addLead: (lead: Omit<Lead, 'id' | 'createdAt'>) => void;
-  addDeal: (deal: Omit<Deal, 'id' | 'createdAt' | 'daysInStage'>) => void;
-  addContact: (contact: Omit<Contact, 'id'>) => void;
-  addAccount: (account: Omit<Account, 'id'>) => void;
-  addTask: (task: Omit<Task, 'id'>) => void;
-  addMeeting: (meeting: Omit<Meeting, 'id'>) => void;
-  addCall: (call: Omit<CallLog, 'id'>) => void;
-  addCampaign: (campaign: Omit<Campaign, 'id'>) => void;
-  addProduct: (product: Omit<Product, 'id'>) => void;
-  addPriceBook: (pb: Omit<PriceBook, 'id'>) => void;
-  addQuote: (quote: Omit<Quote, 'id'>) => void;
-  addSalesOrder: (so: Omit<SalesOrder, 'id'>) => void;
-  addPurchaseOrder: (po: Omit<PurchaseOrder, 'id'>) => void;
-  addInvoice: (inv: Omit<Invoice, 'id'>) => void;
-  addVendor: (vendor: Omit<Vendor, 'id'>) => void;
-  addForecast: (fc: Omit<Forecast, 'id'>) => void;
-  addDocument: (doc: Omit<DocumentItem, 'id' | 'uploadDate'>) => void;
-  addVisit: (visit: Omit<Visit, 'id'>) => void;
-  addService: (srv: Omit<ServiceItem, 'id'>) => void;
-  addProject: (prj: Omit<Project, 'id'>) => void;
-  addAgent: (agent: Omit<AgentConfig, 'id'>) => void;
-  addReport: (report: Omit<ReportItem, 'id' | 'lastRun' | 'createdBy'>) => void;
-  addAnalyticsWidget: (widget: Omit<AnalyticsWidget, 'id'>) => void;
+  // Creation and update methods
+  addLead: (lead: Omit<Lead, 'id' | 'createdAt'>) => Promise<any>;
+  addDeal: (deal: Omit<Deal, 'id' | 'createdAt' | 'daysInStage'>) => Promise<any>;
+  addContact: (contact: Omit<Contact, 'id'>) => Promise<any>;
+  addAccount: (account: Omit<Account, 'id'>) => Promise<any>;
+  addTask: (task: Omit<Task, 'id'>) => Promise<any>;
+  addMeeting: (meeting: Omit<Meeting, 'id'>) => Promise<any>;
+  addCall: (call: Omit<CallLog, 'id'>) => Promise<any>;
+  addCampaign: (campaign: Omit<Campaign, 'id'>) => Promise<any>;
+  addProduct: (product: Omit<Product, 'id'>) => Promise<any>;
+  addPriceBook: (pb: Omit<PriceBook, 'id'>) => Promise<any>;
+  addQuote: (quote: Omit<Quote, 'id'>) => Promise<any>;
+  addSalesOrder: (so: Omit<SalesOrder, 'id'>) => Promise<any>;
+  addPurchaseOrder: (po: Omit<PurchaseOrder, 'id'>) => Promise<any>;
+  addInvoice: (inv: Omit<Invoice, 'id'>) => Promise<any>;
+  addVendor: (vendor: Omit<Vendor, 'id'>) => Promise<any>;
+  addForecast: (fc: Omit<Forecast, 'id'>) => Promise<any>;
+  addDocument: (doc: Omit<DocumentItem, 'id' | 'uploadDate'>) => Promise<any>;
+  addVisit: (visit: Omit<Visit, 'id'>) => Promise<any>;
+  addService: (srv: Omit<ServiceItem, 'id'>) => Promise<any>;
+  addProject: (prj: Omit<Project, 'id'>) => Promise<any>;
+  addAgent: (agent: Omit<AgentConfig, 'id'>) => Promise<any>;
+  addReport: (report: Omit<ReportItem, 'id' | 'lastRun' | 'createdBy'>) => Promise<any>;
+  addAnalyticsWidget: (widget: Omit<AnalyticsWidget, 'id'>) => Promise<any>;
 
-  updateDealStage: (dealId: string, newStage: Deal['stage']) => void;
-  deleteRecords: (module: ModuleType, ids: string[]) => void;
-  addTimelineItem: (recordId: string, item: Omit<ActivityTimelineItem, 'id' | 'timestamp'>) => void;
+  updateDealStage: (dealId: string, newStage: Deal['stage']) => Promise<void>;
+  deleteRecords: (module: ModuleType, ids: string[]) => Promise<void>;
+  addTimelineItem: (recordId: string, item: Omit<ActivityTimelineItem, 'id' | 'timestamp'>) => Promise<void>;
+  convertLeadAction: (leadId: string, payload: any) => Promise<any>;
+  refreshModuleData: (module?: ModuleType) => Promise<void>;
+  fetchRecordById: (module: ModuleType, id: string) => Promise<any>;
 
   // Global Search
   searchQuery: string;
@@ -144,6 +123,7 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [theme, setThemeState] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem('crm_theme') as ThemeMode;
@@ -155,106 +135,34 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [createModalModule, setCreateModalModule] = useState<ModuleType>('leads');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Local storage assisted state
-  const [leads, setLeads] = useState<Lead[]>(() => {
-    const s = localStorage.getItem('crm_leads');
-    return s ? JSON.parse(s) : INITIAL_LEADS;
-  });
-  const [deals, setDeals] = useState<Deal[]>(() => {
-    const s = localStorage.getItem('crm_deals');
-    return s ? JSON.parse(s) : INITIAL_DEALS;
-  });
-  const [contacts, setContacts] = useState<Contact[]>(() => {
-    const s = localStorage.getItem('crm_contacts');
-    return s ? JSON.parse(s) : INITIAL_CONTACTS;
-  });
-  const [accounts, setAccounts] = useState<Account[]>(() => {
-    const s = localStorage.getItem('crm_accounts');
-    return s ? JSON.parse(s) : INITIAL_ACCOUNTS;
-  });
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const s = localStorage.getItem('crm_tasks');
-    return s ? JSON.parse(s) : INITIAL_TASKS;
-  });
-  const [meetings, setMeetings] = useState<Meeting[]>(() => {
-    const s = localStorage.getItem('crm_meetings');
-    return s ? JSON.parse(s) : INITIAL_MEETINGS;
-  });
-  const [calls, setCalls] = useState<CallLog[]>(() => {
-    const s = localStorage.getItem('crm_calls');
-    return s ? JSON.parse(s) : INITIAL_CALLS;
-  });
-  const [campaigns, setCampaigns] = useState<Campaign[]>(() => {
-    const s = localStorage.getItem('crm_campaigns');
-    return s ? JSON.parse(s) : INITIAL_CAMPAIGNS;
-  });
-  const [products, setProducts] = useState<Product[]>(() => {
-    const s = localStorage.getItem('crm_products');
-    return s ? JSON.parse(s) : INITIAL_PRODUCTS;
-  });
-  const [pricebooks, setPricebooks] = useState<PriceBook[]>(() => {
-    const s = localStorage.getItem('crm_pricebooks');
-    return s ? JSON.parse(s) : INITIAL_PRICEBOOKS;
-  });
-  const [quotes, setQuotes] = useState<Quote[]>(() => {
-    const s = localStorage.getItem('crm_quotes');
-    return s ? JSON.parse(s) : INITIAL_QUOTES;
-  });
-  const [salesorders, setSalesorders] = useState<SalesOrder[]>(() => {
-    const s = localStorage.getItem('crm_salesorders');
-    return s ? JSON.parse(s) : INITIAL_SALES_ORDERS;
-  });
-  const [purchaseorders, setPurchaseorders] = useState<PurchaseOrder[]>(() => {
-    const s = localStorage.getItem('crm_purchaseorders');
-    return s ? JSON.parse(s) : INITIAL_PURCHASE_ORDERS;
-  });
-  const [invoices, setInvoices] = useState<Invoice[]>(() => {
-    const s = localStorage.getItem('crm_invoices');
-    return s ? JSON.parse(s) : INITIAL_INVOICES;
-  });
-  const [vendors, setVendors] = useState<Vendor[]>(() => {
-    const s = localStorage.getItem('crm_vendors');
-    return s ? JSON.parse(s) : INITIAL_VENDORS;
-  });
-  const [forecasts, setForecasts] = useState<Forecast[]>(() => {
-    const s = localStorage.getItem('crm_forecasts');
-    return s ? JSON.parse(s) : INITIAL_FORECASTS;
-  });
-  const [documents, setDocuments] = useState<DocumentItem[]>(() => {
-    const s = localStorage.getItem('crm_documents');
-    return s ? JSON.parse(s) : INITIAL_DOCUMENTS;
-  });
-  const [visits, setVisits] = useState<Visit[]>(() => {
-    const s = localStorage.getItem('crm_visits');
-    return s ? JSON.parse(s) : INITIAL_VISITS;
-  });
-  const [services, setServices] = useState<ServiceItem[]>(() => {
-    const s = localStorage.getItem('crm_services');
-    return s ? JSON.parse(s) : INITIAL_SERVICES;
-  });
-  const [projects, setProjects] = useState<Project[]>(() => {
-    const s = localStorage.getItem('crm_projects');
-    return s ? JSON.parse(s) : INITIAL_PROJECTS;
-  });
-  const [agents, setAgents] = useState<AgentConfig[]>(() => {
-    const s = localStorage.getItem('crm_agents');
-    return s ? JSON.parse(s) : INITIAL_AGENTS;
-  });
-  const [reports, setReports] = useState<ReportItem[]>(() => {
-    const s = localStorage.getItem('crm_reports');
-    return s ? JSON.parse(s) : INITIAL_REPORTS;
-  });
-  const [analyticsWidgets, setAnalyticsWidgets] = useState<AnalyticsWidget[]>(() => {
-    const s = localStorage.getItem('crm_analytics_widgets');
-    return s ? JSON.parse(s) : INITIAL_ANALYTICS_WIDGETS;
-  });
+  // Live Database States initialized empty (no mock data)
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [calls, setCalls] = useState<CallLog[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [pricebooks, setPricebooks] = useState<PriceBook[]>([]);
+  const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [salesorders, setSalesorders] = useState<SalesOrder[]>([]);
+  const [purchaseorders, setPurchaseorders] = useState<PurchaseOrder[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [forecasts, setForecasts] = useState<Forecast[]>([]);
+  const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [visits, setVisits] = useState<Visit[]>([]);
+  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [agents, setAgents] = useState<AgentConfig[]>([]);
+  const [reports, setReports] = useState<ReportItem[]>([]);
+  const [analyticsWidgets, setAnalyticsWidgets] = useState<AnalyticsWidget[]>([]);
   const [isCreateReportModalOpen, setIsCreateReportModalOpen] = useState<boolean>(false);
   const [isCreateDashboardModalOpen, setIsCreateDashboardModalOpen] = useState<boolean>(false);
 
-  const [timeline, setTimeline] = useState<Record<string, ActivityTimelineItem[]>>(() => {
-    const s = localStorage.getItem('crm_timeline');
-    return s ? JSON.parse(s) : INITIAL_TIMELINE;
-  });
+  const [timeline, setTimeline] = useState<Record<string, ActivityTimelineItem[]>>({});
 
   // Sync theme
   useEffect(() => {
@@ -274,218 +182,444 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setTheme = (t: ThemeMode) => setThemeState(t);
 
   const openCreateModal = (module?: ModuleType) => {
-    const target = module || (activeModule === 'home' ? 'leads' : activeModule);
-    if (target === 'leads') {
-      setActiveModule('leads');
-      setViewMode('create');
-      setIsCreateModalOpen(false);
+    const target =
+      module ||
+      (activeModule === 'home' ||
+      activeModule === 'workqueue' ||
+      activeModule === 'reports' ||
+      activeModule === 'analytics' ||
+      activeModule === 'setup'
+        ? 'leads'
+        : activeModule);
+    setActiveModule(target);
+    setViewMode('create');
+    setIsCreateModalOpen(false);
+  };
+
+  // Normalization helper to guarantee fields like `id` and `name` are always present
+  const normalizeRecord = (mod: string, doc: any): any => {
+    const id = doc.id || doc._id?.toString() || `rec-${Date.now()}`;
+    let name = doc.name;
+    if (!name) {
+      if (mod === 'leads' || mod === 'contacts') {
+        name = `${doc.salutation ? doc.salutation + ' ' : ''}${doc.firstName || ''} ${doc.lastName || ''}`.trim() || doc.company || doc.email || 'Unnamed';
+      } else if (mod === 'accounts') {
+        name = doc.accountName || 'Unnamed Account';
+      } else if (mod === 'deals') {
+        name = doc.dealName || 'Unnamed Deal';
+      } else if (mod === 'tasks' || mod === 'meetings' || mod === 'calls') {
+        name = doc.subject || 'Activity';
+      } else {
+        name = doc.title || doc.name || `${mod} Record`;
+      }
+    }
+
+    return {
+      ...doc,
+      id,
+      name,
+      createdAt: doc.createdAt ? new Date(doc.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    };
+  };
+
+  // Live fetch function from MongoDB Atlas backend
+  const refreshModuleData = useCallback(async (moduleName?: ModuleType) => {
+    const target = (moduleName || activeModule).toLowerCase();
+    if (['home', 'workqueue', 'reports', 'analytics', 'setup'].includes(target)) {
       return;
     }
-    setCreateModalModule(target);
-    setIsCreateModalOpen(true);
-  };
 
-  // Add methods
-  const addLead = (leadData: Omit<Lead, 'id' | 'createdAt'>) => {
-    const item: Lead = {
-      ...leadData,
-      id: `lead-${Date.now()}`,
-      createdAt: new Date().toISOString().split('T')[0]
+    try {
+      setIsLoading(true);
+      const res = await api.fetchRecords(target, { limit: 100 });
+      const rawRecords = res.data || res.records || [];
+      const normalized = rawRecords.map((r: any) => normalizeRecord(target, r));
+
+      switch (target) {
+        case 'leads': setLeads(normalized); break;
+        case 'deals': setDeals(normalized); break;
+        case 'contacts': setContacts(normalized); break;
+        case 'accounts': setAccounts(normalized); break;
+        case 'tasks': setTasks(normalized); break;
+        case 'meetings': setMeetings(normalized); break;
+        case 'calls': setCalls(normalized); break;
+        case 'campaigns': setCampaigns(normalized); break;
+        case 'products': setProducts(normalized); break;
+        case 'pricebooks': setPricebooks(normalized); break;
+        case 'quotes': setQuotes(normalized); break;
+        case 'salesorders': setSalesorders(normalized); break;
+        case 'purchaseorders': setPurchaseorders(normalized); break;
+        case 'invoices': setInvoices(normalized); break;
+        case 'vendors': setVendors(normalized); break;
+        case 'forecasts': setForecasts(normalized); break;
+        case 'documents': setDocuments(normalized); break;
+        case 'visits': setVisits(normalized); break;
+        case 'services': setServices(normalized); break;
+        case 'projects': setProjects(normalized); break;
+        case 'agents': setAgents(normalized); break;
+        default: break;
+      }
+    } catch (err) {
+      console.error(`Failed to load data for ${target}:`, err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeModule]);
+
+  // Initial load: Fetch core modules from MongoDB Atlas on application start
+  useEffect(() => {
+    const loadCoreData = async () => {
+      try {
+        setIsLoading(true);
+        const [leadsRes, dealsRes, contactsRes, accountsRes, tasksRes] = await Promise.allSettled([
+          api.fetchRecords('leads', { limit: 100 }),
+          api.fetchRecords('deals', { limit: 100 }),
+          api.fetchRecords('contacts', { limit: 100 }),
+          api.fetchRecords('accounts', { limit: 100 }),
+          api.fetchRecords('tasks', { limit: 100 }),
+        ]);
+
+        if (leadsRes.status === 'fulfilled') {
+          setLeads((leadsRes.value.data || []).map(r => normalizeRecord('leads', r)));
+        }
+        if (dealsRes.status === 'fulfilled') {
+          setDeals((dealsRes.value.data || []).map(r => normalizeRecord('deals', r)));
+        }
+        if (contactsRes.status === 'fulfilled') {
+          setContacts((contactsRes.value.data || []).map(r => normalizeRecord('contacts', r)));
+        }
+        if (accountsRes.status === 'fulfilled') {
+          setAccounts((accountsRes.value.data || []).map(r => normalizeRecord('accounts', r)));
+        }
+        if (tasksRes.status === 'fulfilled') {
+          setTasks((tasksRes.value.data || []).map(r => normalizeRecord('tasks', r)));
+        }
+      } catch (e) {
+        console.error('Error preloading core CRM data:', e);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    setLeads(prev => [item, ...prev]);
+
+    loadCoreData();
+  }, []);
+
+  // Whenever activeModule changes, fetch its fresh live dataset
+  useEffect(() => {
+    refreshModuleData(activeModule);
+  }, [activeModule, refreshModuleData]);
+
+  // Fetch single record by ID directly from MongoDB
+  const fetchRecordById = async (module: ModuleType, id: string) => {
+    try {
+      const doc = await api.fetchRecord(module, id);
+      return normalizeRecord(module, doc);
+    } catch (e) {
+      console.error(`Error fetching ${module} record ${id}:`, e);
+      return null;
+    }
   };
 
-  const addDeal = (dealData: Omit<Deal, 'id' | 'createdAt' | 'daysInStage'>) => {
-    const item: Deal = {
-      ...dealData,
-      id: `deal-${Date.now()}`,
-      daysInStage: 0,
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-    setDeals(prev => [item, ...prev]);
+  // ----------------- CRUD Handlers Saving Live to MongoDB Atlas -----------------
+
+  const addLead = async (leadData: Omit<Lead, 'id' | 'createdAt'>) => {
+    try {
+      const created = await api.createRecord('leads', leadData);
+      const normalized = normalizeRecord('leads', created);
+      setLeads(prev => [normalized, ...prev]);
+      return normalized;
+    } catch (err: any) {
+      console.error('Error adding lead:', err);
+      throw err;
+    }
   };
 
-  const addContact = (contactData: Omit<Contact, 'id'>) => {
-    const item: Contact = { ...contactData, id: `c-${Date.now()}` };
-    setContacts(prev => [item, ...prev]);
+  const addDeal = async (dealData: Omit<Deal, 'id' | 'createdAt' | 'daysInStage'>) => {
+    try {
+      const created = await api.createRecord('deals', dealData);
+      const normalized = normalizeRecord('deals', created);
+      setDeals(prev => [normalized, ...prev]);
+      return normalized;
+    } catch (err: any) {
+      console.error('Error adding deal:', err);
+      throw err;
+    }
   };
 
-  const addAccount = (accountData: Omit<Account, 'id'>) => {
-    const item: Account = { ...accountData, id: `acc-${Date.now()}` };
-    setAccounts(prev => [item, ...prev]);
+  const addContact = async (contactData: Omit<Contact, 'id'>) => {
+    try {
+      const created = await api.createRecord('contacts', contactData);
+      const normalized = normalizeRecord('contacts', created);
+      setContacts(prev => [normalized, ...prev]);
+      return normalized;
+    } catch (err: any) {
+      console.error('Error adding contact:', err);
+      throw err;
+    }
   };
 
-  const addTask = (taskData: Omit<Task, 'id'>) => {
-    const item: Task = { ...taskData, id: `task-${Date.now()}` };
-    setTasks(prev => [item, ...prev]);
+  const addAccount = async (accountData: Omit<Account, 'id'>) => {
+    try {
+      const created = await api.createRecord('accounts', accountData);
+      const normalized = normalizeRecord('accounts', created);
+      setAccounts(prev => [normalized, ...prev]);
+      return normalized;
+    } catch (err: any) {
+      console.error('Error adding account:', err);
+      throw err;
+    }
   };
 
-  const addMeeting = (meetingData: Omit<Meeting, 'id'>) => {
-    const item: Meeting = { ...meetingData, id: `meet-${Date.now()}` };
-    setMeetings(prev => [item, ...prev]);
+  const addTask = async (taskData: Omit<Task, 'id'>) => {
+    try {
+      const created = await api.createRecord('tasks', taskData);
+      const normalized = normalizeRecord('tasks', created);
+      setTasks(prev => [normalized, ...prev]);
+      return normalized;
+    } catch (err: any) {
+      console.error('Error adding task:', err);
+      throw err;
+    }
   };
 
-  const addCall = (callData: Omit<CallLog, 'id'>) => {
-    const item: CallLog = { ...callData, id: `call-${Date.now()}` };
-    setCalls(prev => [item, ...prev]);
+  const addMeeting = async (meetingData: Omit<Meeting, 'id'>) => {
+    try {
+      const created = await api.createRecord('meetings', meetingData);
+      const normalized = normalizeRecord('meetings', created);
+      setMeetings(prev => [normalized, ...prev]);
+      return normalized;
+    } catch (err: any) {
+      console.error('Error adding meeting:', err);
+      throw err;
+    }
   };
 
-  const addCampaign = (campData: Omit<Campaign, 'id'>) => {
-    const item: Campaign = { ...campData, id: `camp-${Date.now()}` };
-    setCampaigns(prev => [item, ...prev]);
+  const addCall = async (callData: Omit<CallLog, 'id'>) => {
+    try {
+      const created = await api.createRecord('calls', callData);
+      const normalized = normalizeRecord('calls', created);
+      setCalls(prev => [normalized, ...prev]);
+      return normalized;
+    } catch (err: any) {
+      console.error('Error adding call:', err);
+      throw err;
+    }
   };
 
-  const addProduct = (prodData: Omit<Product, 'id'>) => {
-    const item: Product = { ...prodData, id: `prod-${Date.now()}` };
-    setProducts(prev => [item, ...prev]);
+  const addCampaign = async (campData: Omit<Campaign, 'id'>) => {
+    const created = await api.createRecord('campaigns', campData);
+    const normalized = normalizeRecord('campaigns', created);
+    setCampaigns(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addPriceBook = (pbData: Omit<PriceBook, 'id'>) => {
-    const item: PriceBook = { ...pbData, id: `pb-${Date.now()}` };
-    setPricebooks(prev => [item, ...prev]);
+  const addProduct = async (prodData: Omit<Product, 'id'>) => {
+    const created = await api.createRecord('products', prodData);
+    const normalized = normalizeRecord('products', created);
+    setProducts(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addQuote = (quoteData: Omit<Quote, 'id'>) => {
-    const item: Quote = { ...quoteData, id: `q-${Date.now()}` };
-    setQuotes(prev => [item, ...prev]);
+  const addPriceBook = async (pbData: Omit<PriceBook, 'id'>) => {
+    const created = await api.createRecord('pricebooks', pbData);
+    const normalized = normalizeRecord('pricebooks', created);
+    setPricebooks(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addSalesOrder = (soData: Omit<SalesOrder, 'id'>) => {
-    const item: SalesOrder = { ...soData, id: `so-${Date.now()}` };
-    setSalesorders(prev => [item, ...prev]);
+  const addQuote = async (quoteData: Omit<Quote, 'id'>) => {
+    const created = await api.createRecord('quotes', quoteData);
+    const normalized = normalizeRecord('quotes', created);
+    setQuotes(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addPurchaseOrder = (poData: Omit<PurchaseOrder, 'id'>) => {
-    const item: PurchaseOrder = { ...poData, id: `po-${Date.now()}` };
-    setPurchaseorders(prev => [item, ...prev]);
+  const addSalesOrder = async (soData: Omit<SalesOrder, 'id'>) => {
+    const created = await api.createRecord('salesorders', soData);
+    const normalized = normalizeRecord('salesorders', created);
+    setSalesorders(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addInvoice = (invData: Omit<Invoice, 'id'>) => {
-    const item: Invoice = { ...invData, id: `inv-${Date.now()}` };
-    setInvoices(prev => [item, ...prev]);
+  const addPurchaseOrder = async (poData: Omit<PurchaseOrder, 'id'>) => {
+    const created = await api.createRecord('purchaseorders', poData);
+    const normalized = normalizeRecord('purchaseorders', created);
+    setPurchaseorders(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addVendor = (vendorData: Omit<Vendor, 'id'>) => {
-    const item: Vendor = { ...vendorData, id: `v-${Date.now()}` };
-    setVendors(prev => [item, ...prev]);
+  const addInvoice = async (invData: Omit<Invoice, 'id'>) => {
+    const created = await api.createRecord('invoices', invData);
+    const normalized = normalizeRecord('invoices', created);
+    setInvoices(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addForecast = (fcData: Omit<Forecast, 'id'>) => {
-    const item: Forecast = { ...fcData, id: `fc-${Date.now()}` };
-    setForecasts(prev => [item, ...prev]);
+  const addVendor = async (vendorData: Omit<Vendor, 'id'>) => {
+    const created = await api.createRecord('vendors', vendorData);
+    const normalized = normalizeRecord('vendors', created);
+    setVendors(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addDocument = (docData: Omit<DocumentItem, 'id' | 'uploadDate'>) => {
-    const item: DocumentItem = {
-      ...docData,
-      id: `doc-${Date.now()}`,
-      uploadDate: new Date().toISOString().split('T')[0]
-    };
-    setDocuments(prev => [item, ...prev]);
+  const addForecast = async (fcData: Omit<Forecast, 'id'>) => {
+    const created = await api.createRecord('forecasts', fcData);
+    const normalized = normalizeRecord('forecasts', created);
+    setForecasts(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addVisit = (visitData: Omit<Visit, 'id'>) => {
-    const item: Visit = { ...visitData, id: `vis-${Date.now()}` };
-    setVisits(prev => [item, ...prev]);
+  const addDocument = async (docData: Omit<DocumentItem, 'id' | 'uploadDate'>) => {
+    const created = await api.createRecord('documents', docData);
+    const normalized = normalizeRecord('documents', created);
+    setDocuments(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addService = (srvData: Omit<ServiceItem, 'id'>) => {
-    const item: ServiceItem = { ...srvData, id: `srv-${Date.now()}` };
-    setServices(prev => [item, ...prev]);
+  const addVisit = async (visitData: Omit<Visit, 'id'>) => {
+    const created = await api.createRecord('visits', visitData);
+    const normalized = normalizeRecord('visits', created);
+    setVisits(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addProject = (prjData: Omit<Project, 'id'>) => {
-    const item: Project = { ...prjData, id: `prj-${Date.now()}` };
-    setProjects(prev => [item, ...prev]);
+  const addService = async (srvData: Omit<ServiceItem, 'id'>) => {
+    const created = await api.createRecord('services', srvData);
+    const normalized = normalizeRecord('services', created);
+    setServices(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addAgent = (agentData: Omit<AgentConfig, 'id'>) => {
-    const item: AgentConfig = { ...agentData, id: `agt-${Date.now()}` };
-    setAgents(prev => [item, ...prev]);
+  const addProject = async (prjData: Omit<Project, 'id'>) => {
+    const created = await api.createRecord('projects', prjData);
+    const normalized = normalizeRecord('projects', created);
+    setProjects(prev => [normalized, ...prev]);
+    return normalized;
   };
 
-  const addReport = (reportData: Omit<ReportItem, 'id' | 'lastRun' | 'createdBy'>) => {
+  const addAgent = async (agentData: Omit<AgentConfig, 'id'>) => {
+    const created = await api.createRecord('agents', agentData);
+    const normalized = normalizeRecord('agents', created);
+    setAgents(prev => [normalized, ...prev]);
+    return normalized;
+  };
+
+  const addReport = async (reportData: Omit<ReportItem, 'id' | 'lastRun' | 'createdBy'>) => {
     const item: ReportItem = {
       ...reportData,
       id: `rep-${Date.now()}`,
       lastRun: 'Just now',
-      createdBy: 'Rajesh Kumar'
+      createdBy: 'Govind Choudhary',
     };
     setReports(prev => [item, ...prev]);
+    return item;
   };
 
-  const addAnalyticsWidget = (widgetData: Omit<AnalyticsWidget, 'id'>) => {
+  const addAnalyticsWidget = async (widgetData: Omit<AnalyticsWidget, 'id'>) => {
     const item: AnalyticsWidget = {
       ...widgetData,
-      id: `w-${Date.now()}`
+      id: `w-${Date.now()}`,
     };
     setAnalyticsWidgets(prev => [item, ...prev]);
+    return item;
   };
 
-  const updateDealStage = (dealId: string, newStage: Deal['stage']) => {
-    setDeals(prev =>
-      prev.map(deal => {
-        if (deal.id === dealId) {
-          const map: Record<Deal['stage'], number> = {
-            Qualification: 20,
-            'Needs Analysis': 40,
-            'Value Proposition': 50,
-            'Proposal/Quote': 65,
-            'Negotiation/Review': 85,
-            'Closed Won': 100,
-            'Closed Lost': 0
-          };
-          return {
-            ...deal,
-            stage: newStage,
-            probability: map[newStage],
-            daysInStage: 0
-          };
-        }
-        return deal;
-      })
-    );
-  };
-
-  const deleteRecords = (module: ModuleType, ids: string[]) => {
-    switch (module) {
-      case 'leads': setLeads(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'deals': setDeals(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'contacts': setContacts(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'accounts': setAccounts(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'tasks': setTasks(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'meetings': setMeetings(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'calls': setCalls(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'campaigns': setCampaigns(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'products': setProducts(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'pricebooks': setPricebooks(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'quotes': setQuotes(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'salesorders': setSalesorders(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'purchaseorders': setPurchaseorders(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'invoices': setInvoices(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'vendors': setVendors(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'forecasts': setForecasts(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'documents': setDocuments(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'visits': setVisits(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'services': setServices(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'projects': setProjects(p => p.filter(i => !ids.includes(i.id))); break;
-      case 'agents': setAgents(p => p.filter(i => !ids.includes(i.id))); break;
-      default: break;
+  const updateDealStage = async (dealId: string, newStage: Deal['stage']) => {
+    try {
+      await api.updateRecord('deals', dealId, { stage: newStage });
+      setDeals(prev =>
+        prev.map(deal => {
+          if (deal.id === dealId) {
+            return {
+              ...deal,
+              stage: newStage,
+            };
+          }
+          return deal;
+        })
+      );
+    } catch (e) {
+      console.error('Error updating deal stage in backend:', e);
     }
   };
 
-  const addTimelineItem = (recordId: string, item: Omit<ActivityTimelineItem, 'id' | 'timestamp'>) => {
+  // Live Bulk Delete from MongoDB Atlas
+  const deleteRecords = async (module: ModuleType, ids: string[]) => {
+    try {
+      await api.bulkDeleteRecords(module, ids);
+      switch (module) {
+        case 'leads': setLeads(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'deals': setDeals(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'contacts': setContacts(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'accounts': setAccounts(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'tasks': setTasks(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'meetings': setMeetings(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'calls': setCalls(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'campaigns': setCampaigns(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'products': setProducts(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'pricebooks': setPricebooks(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'quotes': setQuotes(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'salesorders': setSalesorders(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'purchaseorders': setPurchaseorders(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'invoices': setInvoices(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'vendors': setVendors(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'forecasts': setForecasts(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'documents': setDocuments(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'visits': setVisits(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'services': setServices(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'projects': setProjects(p => p.filter(i => !ids.includes(i.id))); break;
+        case 'agents': setAgents(p => p.filter(i => !ids.includes(i.id))); break;
+        default: break;
+      }
+    } catch (e) {
+      console.error(`Error deleting records from ${module}:`, e);
+      throw e;
+    }
+  };
+
+  const addTimelineItem = async (recordId: string, item: Omit<ActivityTimelineItem, 'id' | 'timestamp'>) => {
+    const newItem: ActivityTimelineItem = {
+      ...item,
+      id: `act-${Date.now()}`,
+      timestamp: 'Just now',
+    };
     setTimeline(prev => ({
       ...prev,
-      [recordId]: [
-        {
-          ...item,
-          id: `time-${Date.now()}`,
-          timestamp: 'Just now'
-        },
-        ...(prev[recordId] || [])
-      ]
+      [recordId]: [newItem, ...(prev[recordId] || [])],
     }));
+
+    // If it's a task/call/meeting, also persist to Activity collection
+    try {
+      await api.addActivity({
+        activityType: item.type === 'call' ? 'call' : item.type === 'meeting' ? 'meeting' : 'task',
+        subject: item.title,
+        description: item.description,
+        relatedTo: { recordId, module: activeModule },
+      });
+    } catch (e) {
+      console.warn('Could not persist activity to MongoDB:', e);
+    }
+  };
+
+  // Convert Lead Atomic Action
+  const convertLeadAction = async (leadId: string, payload: any) => {
+    try {
+      setIsLoading(true);
+      const result = await api.convertLead(leadId, payload);
+      // Refresh Leads, Accounts, Contacts, and Deals to sync MongoDB state
+      await Promise.allSettled([
+        refreshModuleData('leads'),
+        refreshModuleData('accounts'),
+        refreshModuleData('contacts'),
+        refreshModuleData('deals'),
+      ]);
+      return result;
+    } catch (e) {
+      console.error('Lead conversion failed:', e);
+      throw e;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -507,6 +641,7 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsCreateModalOpen,
         createModalModule,
         openCreateModal,
+        isLoading,
         leads,
         deals,
         contacts,
@@ -561,8 +696,11 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updateDealStage,
         deleteRecords,
         addTimelineItem,
+        convertLeadAction,
+        refreshModuleData,
+        fetchRecordById,
         searchQuery,
-        setSearchQuery
+        setSearchQuery,
       }}
     >
       {children}

@@ -17,7 +17,9 @@ import {
   Target,
   FileText,
   PanelLeft,
-  X
+  X,
+  Phone,
+  User
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
@@ -43,11 +45,13 @@ export const Header: React.FC = () => {
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSignalsOpen, setIsSignalsOpen] = useState(false);
+  const [isQuickCreateOpen, setIsQuickCreateOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [unreadCount, setUnreadCount] = useState(3);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const signalsRef = useRef<HTMLDivElement>(null);
+  const quickCreateRef = useRef<HTMLDivElement>(null);
 
   // Keyboard shortcut Alt + S to focus search
   useEffect(() => {
@@ -70,6 +74,9 @@ export const Header: React.FC = () => {
       }
       if (signalsRef.current && !signalsRef.current.contains(e.target as Node)) {
         setIsSignalsOpen(false);
+      }
+      if (quickCreateRef.current && !quickCreateRef.current.contains(e.target as Node)) {
+        setIsQuickCreateOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -249,14 +256,95 @@ export const Header: React.FC = () => {
 
       {/* Right Side Utilities */}
       <div className="flex items-center space-x-1.5 sm:space-x-2">
-        {/* Quick Create (+) Button */}
-        <button
-          onClick={() => openCreateModal()}
-          className="hidden sm:inline-flex items-center justify-center px-2.5 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-xs shadow-blue-500/20 transition-all duration-150"
-          title="Quick Create Record"
-        >
-          <span className="text-sm font-bold mr-1">+</span> Quick Create
-        </button>
+        {/* Quick Create (+) Dropdown */}
+        <div className="relative" ref={quickCreateRef}>
+          <button
+            onClick={() => setIsQuickCreateOpen(!isQuickCreateOpen)}
+            className="hidden sm:inline-flex items-center justify-center px-2.5 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-xs shadow-blue-500/20 transition-all duration-150"
+            title="Quick Create Record"
+          >
+            <span className="text-sm font-bold mr-1">+</span> Quick Create
+          </button>
+
+          {isQuickCreateOpen && (
+            <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1 overflow-hidden text-xs">
+              <div className="px-3 py-1.5 font-semibold text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                Quick Create
+              </div>
+              <button
+                onClick={() => {
+                  setActiveModule('leads');
+                  setViewMode('create');
+                  setIsQuickCreateOpen(false);
+                }}
+                className="w-full px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-200"
+              >
+                <Users className="w-3.5 h-3.5 text-blue-500" /> Create Lead
+              </button>
+              <button
+                onClick={() => {
+                  setActiveModule('contacts');
+                  setViewMode('create');
+                  setIsQuickCreateOpen(false);
+                }}
+                className="w-full px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-200"
+              >
+                <User className="w-3.5 h-3.5 text-purple-500" /> Create Contact
+              </button>
+              <button
+                onClick={() => {
+                  setActiveModule('accounts');
+                  setViewMode('create');
+                  setIsQuickCreateOpen(false);
+                }}
+                className="w-full px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-200"
+              >
+                <Building2 className="w-3.5 h-3.5 text-indigo-500" /> Create Account
+              </button>
+              <button
+                onClick={() => {
+                  setActiveModule('deals');
+                  setViewMode('create');
+                  setIsQuickCreateOpen(false);
+                }}
+                className="w-full px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-200"
+              >
+                <Target className="w-3.5 h-3.5 text-emerald-500" /> Create Deal
+              </button>
+              <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
+              <button
+                onClick={() => {
+                  setActiveModule('tasks');
+                  setViewMode('create');
+                  setIsQuickCreateOpen(false);
+                }}
+                className="w-full px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-200"
+              >
+                <FileText className="w-3.5 h-3.5 text-amber-500" /> Create Task
+              </button>
+              <button
+                onClick={() => {
+                  setActiveModule('calls');
+                  setViewMode('create');
+                  setIsQuickCreateOpen(false);
+                }}
+                className="w-full px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-200"
+              >
+                <Phone className="w-3.5 h-3.5 text-teal-500" /> Log a Call
+              </button>
+              <button
+                onClick={() => {
+                  setActiveModule('meetings');
+                  setViewMode('create');
+                  setIsQuickCreateOpen(false);
+                }}
+                className="w-full px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-200"
+              >
+                <CalendarIcon className="w-3.5 h-3.5 text-rose-500" /> Schedule Meeting
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Ask Zia AI Assistant */}
         <button
@@ -306,7 +394,7 @@ export const Header: React.FC = () => {
                 <div className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                   <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">Deal Stalled Alert</div>
                   <div className="text-[11px] text-slate-400">Omnichannel CRM Expansion has been in Needs Analysis for 14 days</div>
-                  <div className="text-[10px] text-amber-500 mt-1">1 hour ago • Zia Risk Score</div>
+                  <div className="text-[10px] text-amber-500 mt-1">1 hour ago • Novi Risk Score</div>
                 </div>
                 <div className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                   <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">Upcoming Meeting with Apex Retail</div>

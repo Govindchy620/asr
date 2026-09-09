@@ -583,7 +583,7 @@ export const INITIAL_PROJECTS: Project[] = [
 export const INITIAL_AGENTS: AgentConfig[] = [
   {
     id: 'agt-1',
-    name: 'Zia Predictive Lead Scorer',
+    name: 'Novi Predictive Lead Scorer',
     type: 'Lead Scoring',
     trigger: 'New Inbound Lead Created',
     action: 'Analyze firmographics, compute intent score 0-100, flag >80 as Hot',
@@ -654,7 +654,7 @@ export const INITIAL_REPORTS: ReportItem[] = [
     name: 'Lead Conversion Ratio by Source',
     module: 'Leads',
     reportType: 'Matrix',
-    columns: ['Lead Name', 'Company', 'Lead Source', 'Lead Status', 'Zia Score'],
+    columns: ['Lead Name', 'Company', 'Lead Source', 'Lead Status', 'Novi Score'],
     rows: '112 records',
     lastRun: 'Yesterday',
     createdBy: 'Sneha Patel'

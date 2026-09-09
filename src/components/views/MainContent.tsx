@@ -5,7 +5,11 @@ import { ListView, ColumnDef } from './ListView';
 import { KanbanView } from './KanbanView';
 import { RecordDetailView } from './RecordDetailView';
 import { CreateLeadView } from './CreateLeadView';
+import { CreateContactView } from './CreateContactView';
+import { CreateAccountView } from './CreateAccountView';
+import { CreateModuleRecordView } from './CreateModuleRecordView';
 import { DashboardView } from './DashboardView';
+import { WorkqueueView } from './WorkqueueView';
 import { SetupView } from './SetupView';
 import { ManageColumnsModal } from '../modals/ManageColumnsModal';
 import {
@@ -119,7 +123,7 @@ export const MainContent: React.FC = () => {
     },
     {
       key: 'leadScore',
-      header: 'Zia Score',
+      header: 'Novi Score',
       render: l => (
         <div className="flex items-center space-x-1 font-bold text-xs text-blue-600 dark:text-blue-400">
           <span>{l.leadScore}</span>
@@ -184,7 +188,9 @@ export const MainContent: React.FC = () => {
     {
       key: 'annualRevenue',
       header: 'Annual Revenue',
-      render: a => `₹${(a.annualRevenue / 10000000).toFixed(1)} Cr`
+      render: a => typeof a.annualRevenue === 'number'
+        ? `₹${(a.annualRevenue / 10000000).toFixed(1)} Cr`
+        : `₹${a.annualRevenue}`
     },
     { key: 'billingCity', header: 'City' }
   ];
@@ -474,13 +480,19 @@ export const MainContent: React.FC = () => {
     return <RecordDetailView />;
   }
 
-  // If creating a new Lead
-  if (activeModule === 'leads' && viewMode === 'create') {
-    return <CreateLeadView />;
+  // If creating a new record
+  if (viewMode === 'create') {
+    if (activeModule === 'leads') return <CreateLeadView />;
+    if (activeModule === 'contacts') return <CreateContactView />;
+    if (activeModule === 'accounts') return <CreateAccountView />;
+    return <CreateModuleRecordView />;
   }
 
   // 1. Home
   if (activeModule === 'home') return <DashboardView />;
+
+  // 1b. Workqueue
+  if (activeModule === 'workqueue') return <WorkqueueView />;
 
   // 2. Setup
   if (activeModule === 'setup') return <SetupView />;
@@ -829,10 +841,8 @@ export const MainContent: React.FC = () => {
           columns={columns}
           entityName={entityName}
           onRowClick={item => {
-            if (activeModule === 'leads' || activeModule === 'deals' || activeModule === 'contacts' || activeModule === 'accounts') {
-              setSelectedRecordId(item.id);
-              setViewMode('detail');
-            }
+            setSelectedRecordId(item.id);
+            setViewMode('detail');
           }}
         />
         <ManageColumnsModal

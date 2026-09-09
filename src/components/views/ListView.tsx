@@ -78,10 +78,14 @@ export function ListView<T extends { id: string }>({
       : String(bVal).localeCompare(String(aVal));
   });
 
-  const handleDeleteSelected = () => {
-    if (confirm(`Are you sure you want to delete ${selectedIds.length} selected record(s)?`)) {
-      deleteRecords(activeModule, selectedIds);
-      setSelectedIds([]);
+  const handleDeleteSelected = async () => {
+    if (confirm(`Are you sure you want to delete ${selectedIds.length} selected record(s) from MongoDB Atlas?`)) {
+      try {
+        await deleteRecords(activeModule, selectedIds);
+        setSelectedIds([]);
+      } catch (err: any) {
+        alert(`Error deleting records: ${err.message}`);
+      }
     }
   };
 

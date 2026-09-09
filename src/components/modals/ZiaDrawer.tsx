@@ -58,7 +58,7 @@ export const ZiaDrawer: React.FC = () => {
         ziaReply = `Current active pipeline stands at ₹${total.toLocaleString('en-IN')}. Weighted probability forecast for this quarter is ₹${Math.round(total * 0.65).toLocaleString('en-IN')}.`;
       } else if (lower.includes('lead') || lower.includes('score')) {
         const topLead = [...leads].sort((a, b) => b.leadScore - a.leadScore)[0];
-        ziaReply = `Highest scoring lead is ${topLead?.name} (${topLead?.company}) with a Zia Score of ${topLead?.leadScore}/100 based on website demo requests.`;
+        ziaReply = `Highest scoring lead is ${topLead?.name} (${topLead?.company}) with a Novi Score of ${topLead?.leadScore}/100 based on website demo requests.`;
       } else {
         ziaReply = `I understand your request. Based on your current CRM activities, your deal velocity is 18% higher than team average this month. What specific record or report would you like me to pull up?`;
       }
@@ -119,7 +119,7 @@ export const ZiaDrawer: React.FC = () => {
           <span>Pipeline Forecast</span>
         </button>
         <button
-          onClick={() => setInputText('Show top leads by Zia score')}
+          onClick={() => setInputText('Show top leads by Novi score')}
           className="px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-purple-400 flex items-center gap-1"
         >
           <Zap className="w-3 h-3 text-emerald-500" />

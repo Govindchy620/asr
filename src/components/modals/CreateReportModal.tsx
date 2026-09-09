@@ -18,7 +18,7 @@ export const CreateReportModal: React.FC = () => {
 
   const MODULE_COLUMNS: Record<string, string[]> = {
     Deals: ['Deal Name', 'Account Name', 'Amount', 'Stage', 'Probability', 'Expected Close Date', 'Deal Owner', 'Lead Source'],
-    Leads: ['Lead Name', 'Company', 'Lead Status', 'Zia Score', 'Annual Revenue', 'Lead Owner', 'Created Date'],
+    Leads: ['Lead Name', 'Company', 'Lead Status', 'Novi Score', 'Annual Revenue', 'Lead Owner', 'Created Date'],
     Contacts: ['Contact Name', 'Account Name', 'Email', 'Phone', 'Department', 'Contact Owner'],
     Accounts: ['Account Name', 'Industry', 'Annual Revenue', 'City', 'Phone', 'Account Owner'],
     Invoices: ['Invoice #', 'Account Name', 'Invoice Date', 'Due Date', 'Total Amount', 'Status'],

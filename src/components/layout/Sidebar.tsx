@@ -3,6 +3,7 @@ import { useCRM } from '../../context/CRMContext';
 import { ModuleType } from '../../types/crm';
 import {
   Home,
+  ListTodo,
   FileSpreadsheet,
   BarChart3,
   Bot,
@@ -68,6 +69,7 @@ export const Sidebar: React.FC = () => {
   const navItems: NavItem[] = [
     // 1. Overview & AI
     { id: 'home', label: 'Home', icon: Home, category: 'Overview' },
+    { id: 'workqueue', label: 'Workqueue', icon: ListTodo, badge: 6, category: 'Overview' },
     { id: 'reports', label: 'Reports', icon: FileSpreadsheet, category: 'Overview' },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, category: 'Overview' },
     { id: 'agents', label: 'Agents', icon: Bot, category: 'Overview' },

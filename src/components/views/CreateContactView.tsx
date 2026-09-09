@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useCRM } from '../../context/CRMContext';
 import {
   Camera,
-  Info,
-  ChevronDown,
   Code2,
   Pin,
   MessageSquare,
@@ -11,95 +9,134 @@ import {
   AlertCircle,
   CheckCircle2,
   X,
-  Sparkles
+  Sparkles,
+  Copy
 } from 'lucide-react';
 
-export const CreateLeadView: React.FC = () => {
-  const { addLead, setViewMode, setSelectedRecordId } = useCRM();
+export const CreateContactView: React.FC = () => {
+  const { addContact, setViewMode, setSelectedRecordId, accounts, vendors } = useCRM();
 
-  // Field states - Lead Information
+  // Contact Information states
   const [salutation, setSalutation] = useState('-None-');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [company, setCompany] = useState('');
+  const [accountName, setAccountName] = useState(accounts[0]?.name || '');
+  const [vendorName, setVendorName] = useState('');
   const [title, setTitle] = useState('');
-  const [leadOwner] = useState('Govind Choudhary');
-  const [phone, setPhone] = useState('');
-  const [mobile, setMobile] = useState('');
+  const [department, setDepartment] = useState('');
   const [email, setEmail] = useState('');
   const [secondaryEmail, setSecondaryEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [otherPhone, setOtherPhone] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [homePhone, setHomePhone] = useState('');
   const [fax, setFax] = useState('');
-  const [website, setWebsite] = useState('');
+  const [assistant, setAssistant] = useState('');
+  const [asstPhone, setAsstPhone] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
   const [leadSource, setLeadSource] = useState('-None-');
-  const [leadStatus, setLeadStatus] = useState('-None-');
-  const [industry, setIndustry] = useState('-None-');
-  const [noOfEmployees, setNoOfEmployees] = useState('');
-  const [annualRevenue, setAnnualRevenue] = useState('');
-  const [rating, setRating] = useState('-None-');
   const [emailOptOut, setEmailOptOut] = useState(false);
   const [skypeId, setSkypeId] = useState('');
   const [twitter, setTwitter] = useState('');
-  const [leadImage, setLeadImage] = useState<string | null>(null);
+  const [reportingTo, setReportingTo] = useState('');
+  const [contactImage, setContactImage] = useState<string | null>(null);
+  const contactOwner = 'Govind Choudhary';
 
-  // Address Information
+  // Mailing Address states
   const [country, setCountry] = useState('-None-');
   const [flatHouseBuilding, setFlatHouseBuilding] = useState('');
   const [streetAddress, setStreetAddress] = useState('');
   const [city, setCity] = useState('');
   const [stateProvince, setStateProvince] = useState('-None-');
   const [zipPostalCode, setZipPostalCode] = useState('');
-  const [coordinates, setCoordinates] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
 
-  // Description Information
+  // Other Address states
+  const [otherCountry, setOtherCountry] = useState('-None-');
+  const [otherFlatHouseBuilding, setOtherFlatHouseBuilding] = useState('');
+  const [otherStreetAddress, setOtherStreetAddress] = useState('');
+  const [otherCity, setOtherCity] = useState('');
+  const [otherStateProvince, setOtherStateProvince] = useState('-None-');
+  const [otherZipPostalCode, setOtherZipPostalCode] = useState('');
+  const [otherLatitude, setOtherLatitude] = useState('');
+  const [otherLongitude, setOtherLongitude] = useState('');
+
+  // Description
   const [description, setDescription] = useState('');
 
   // UI helpers
   const [formView, setFormView] = useState('Standard View');
   const [showClientScriptDrawer, setShowClientScriptDrawer] = useState(false);
-  const [errors, setErrors] = useState<{ lastName?: string; company?: string }>({});
+  const [errors, setErrors] = useState<{ lastName?: string }>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const clearAddress = () => {
+  const clearMailingAddress = () => {
     setCountry('-None-');
     setFlatHouseBuilding('');
     setStreetAddress('');
     setCity('');
     setStateProvince('-None-');
     setZipPostalCode('');
-    setCoordinates('');
+    setLatitude('');
+    setLongitude('');
+  };
+
+  const clearOtherAddress = () => {
+    setOtherCountry('-None-');
+    setOtherFlatHouseBuilding('');
+    setOtherStreetAddress('');
+    setOtherCity('');
+    setOtherStateProvince('-None-');
+    setOtherZipPostalCode('');
+    setOtherLatitude('');
+    setOtherLongitude('');
+  };
+
+  const copyMailingToOther = () => {
+    setOtherCountry(country);
+    setOtherFlatHouseBuilding(flatHouseBuilding);
+    setOtherStreetAddress(streetAddress);
+    setOtherCity(city);
+    setOtherStateProvince(stateProvince);
+    setOtherZipPostalCode(zipPostalCode);
+    setOtherLatitude(latitude);
+    setOtherLongitude(longitude);
   };
 
   const resetForm = () => {
     setSalutation('-None-');
     setFirstName('');
     setLastName('');
-    setCompany('');
+    setAccountName(accounts[0]?.name || '');
+    setVendorName('');
     setTitle('');
-    setPhone('');
-    setMobile('');
+    setDepartment('');
     setEmail('');
     setSecondaryEmail('');
+    setPhone('');
+    setOtherPhone('');
+    setMobile('');
+    setHomePhone('');
     setFax('');
-    setWebsite('');
+    setAssistant('');
+    setAsstPhone('');
+    setDateOfBirth('');
     setLeadSource('-None-');
-    setLeadStatus('-None-');
-    setIndustry('-None-');
-    setNoOfEmployees('');
-    setAnnualRevenue('');
-    setRating('-None-');
     setEmailOptOut(false);
     setSkypeId('');
     setTwitter('');
-    setLeadImage(null);
-    clearAddress();
+    setReportingTo('');
+    setContactImage(null);
+    clearMailingAddress();
+    clearOtherAddress();
     setDescription('');
     setErrors({});
   };
 
   const validate = () => {
-    const errs: { lastName?: string; company?: string } = {};
+    const errs: { lastName?: string } = {};
     if (!lastName.trim()) errs.lastName = 'Last Name cannot be empty';
-    if (!company.trim()) errs.company = 'Company cannot be empty';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -116,42 +153,52 @@ export const CreateLeadView: React.FC = () => {
       .trim();
 
     try {
-      const created = await addLead({
+      const created = await addContact({
         name: fullName || lastName,
         salutation,
         firstName,
         lastName,
-        company,
-        title: title || 'Lead Contact',
-        email: email || `${lastName.toLowerCase().replace(/\s+/g, '')}@${company.toLowerCase().replace(/[^a-z0-9]/g, '') || 'company'}.com`,
-        secondaryEmail,
+        accountName: accountName || 'Independent',
+        vendorName: vendorName || undefined,
+        title: title || 'Contact',
+        department: department || 'General',
+        email: email || `${lastName.toLowerCase().replace(/\s+/g, '')}@example.com`,
+        secondaryEmail: secondaryEmail || undefined,
         phone: phone || mobile || '+91 98765 43210',
-        mobile,
-        fax,
-        website,
-        leadSource: leadSource !== '-None-' ? leadSource : 'Web Direct',
-        leadStatus: leadStatus !== '-None-' ? leadStatus : 'Not Contacted',
-        leadScore: 65,
-        leadOwner,
-        annualRevenue: annualRevenue ? `₹${annualRevenue}` : '₹10,00,000',
-        rating: rating !== '-None-' ? rating : undefined,
-        industry: industry !== '-None-' ? industry : undefined,
-        noOfEmployees,
+        otherPhone: otherPhone || undefined,
+        mobile: mobile || undefined,
+        homePhone: homePhone || undefined,
+        fax: fax || undefined,
+        assistant: assistant || undefined,
+        asstPhone: asstPhone || undefined,
+        dateOfBirth: dateOfBirth || undefined,
+        leadSource: leadSource !== '-None-' ? leadSource : 'Direct',
+        owner: contactOwner,
         emailOptOut,
-        skypeId,
-        twitter,
-        leadImage: leadImage || undefined,
+        skypeId: skypeId || undefined,
+        twitter: twitter || undefined,
+        reportingTo: reportingTo || undefined,
+        contactImage: contactImage || undefined,
         country: country !== '-None-' ? country : undefined,
-        flatHouseBuilding,
-        streetAddress,
-        city,
+        flatHouseBuilding: flatHouseBuilding || undefined,
+        streetAddress: streetAddress || undefined,
+        city: city || undefined,
         stateProvince: stateProvince !== '-None-' ? stateProvince : undefined,
-        zipPostalCode,
-        coordinates,
-        description
+        zipPostalCode: zipPostalCode || undefined,
+        latitude: latitude || undefined,
+        longitude: longitude || undefined,
+        otherCountry: otherCountry !== '-None-' ? otherCountry : undefined,
+        otherFlatHouseBuilding: otherFlatHouseBuilding || undefined,
+        otherStreetAddress: otherStreetAddress || undefined,
+        otherCity: otherCity || undefined,
+        otherStateProvince: otherStateProvince !== '-None-' ? otherStateProvince : undefined,
+        otherZipPostalCode: otherZipPostalCode || undefined,
+        otherLatitude: otherLatitude || undefined,
+        otherLongitude: otherLongitude || undefined,
+        description: description || undefined
       });
 
-      setToastMessage(`Lead "${fullName || lastName}" successfully saved to MongoDB Atlas!`);
+      setToastMessage(`Contact "${fullName || lastName}" successfully saved to MongoDB Atlas!`);
       setTimeout(() => setToastMessage(null), 3000);
 
       if (saveAndNew) {
@@ -164,7 +211,7 @@ export const CreateLeadView: React.FC = () => {
         setViewMode('list');
       }
     } catch (err: any) {
-      alert(`Error saving lead: ${err.message}`);
+      alert(`Error saving contact: ${err.message}`);
     }
   };
 
@@ -173,7 +220,7 @@ export const CreateLeadView: React.FC = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setLeadImage(reader.result as string);
+        setContactImage(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -193,13 +240,13 @@ export const CreateLeadView: React.FC = () => {
       <div className="shrink-0 px-6 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-[#111827] z-20">
         <div className="flex items-center space-x-3">
           <h1 className="text-xl font-bold text-blue-900 dark:text-blue-400">
-            Create Lead
+            Create Contact
           </h1>
           <a
             href="#edit-layout"
             onClick={e => {
               e.preventDefault();
-              alert('Page Layout Editor: You can drag and drop fields to customize this form layout.');
+              alert('Page Layout Editor: Customize fields and sections for Contacts.');
             }}
             className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
           >
@@ -238,20 +285,20 @@ export const CreateLeadView: React.FC = () => {
         {Object.keys(errors).length > 0 && (
           <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-lg flex items-center space-x-2 text-xs text-red-600 dark:text-red-400">
             <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>Please fill in all mandatory fields (Company, Last Name).</span>
+            <span>Please fill in the mandatory field (Last Name).</span>
           </div>
         )}
 
-        {/* Lead Image Box */}
+        {/* Contact Image Box */}
         <div className="flex items-center space-x-4 pb-2">
           <div className="relative group">
             <div className="w-16 h-16 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-800/60 text-slate-400 overflow-hidden">
-              {leadImage ? (
-                <img src={leadImage} alt="Lead" className="w-full h-full object-cover" />
+              {contactImage ? (
+                <img src={contactImage} alt="Contact" className="w-full h-full object-cover" />
               ) : (
                 <>
                   <Camera className="w-5 h-5 text-slate-400" />
-                  <span className="text-[9px] mt-1 font-medium">Lead Image</span>
+                  <span className="text-[9px] mt-1 font-medium">Contact Image</span>
                 </>
               )}
             </div>
@@ -261,33 +308,33 @@ export const CreateLeadView: React.FC = () => {
             </label>
           </div>
           <div className="text-xs text-slate-500 dark:text-slate-400">
-            <p className="font-semibold text-slate-700 dark:text-slate-300">Lead Photo</p>
-            <p className="text-[11px]">Upload a lead avatar (PNG, JPG up to 2MB)</p>
+            <p className="font-semibold text-slate-700 dark:text-slate-300">Contact Photo</p>
+            <p className="text-[11px]">Upload a contact headshot (PNG, JPG up to 2MB)</p>
           </div>
         </div>
 
-        {/* SECTION 1: Lead Information */}
+        {/* SECTION 1: Contact Information */}
         <div className="space-y-4">
           <div className="border-b border-slate-200 dark:border-slate-800 pb-1.5">
             <h2 className="text-sm font-bold text-blue-900 dark:text-blue-400 tracking-wide uppercase">
-              Lead Information
+              Contact Information
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3.5 text-xs">
             {/* LEFT COLUMN */}
             <div className="space-y-3.5">
-              {/* Lead Owner */}
+              {/* Contact Owner */}
               <div className="flex items-center">
                 <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                  Lead Owner
+                  Contact Owner
                 </label>
                 <div className="flex-1 flex items-center space-x-2">
                   <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
                     G
                   </div>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">
-                    {leadOwner}
+                    {contactOwner}
                   </span>
                 </div>
               </div>
@@ -320,15 +367,37 @@ export const CreateLeadView: React.FC = () => {
                 </div>
               </div>
 
-              {/* Title */}
+              {/* Account Name */}
               <div className="flex items-center">
                 <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                  Title
+                  Account Name
+                </label>
+                <div className="flex-1 flex items-center space-x-1">
+                  <input
+                    type="text"
+                    value={accountName}
+                    onChange={e => setAccountName(e.target.value)}
+                    placeholder="Search or enter Account Name"
+                    list="account-suggestions"
+                    className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                  />
+                  <datalist id="account-suggestions">
+                    {accounts.map(a => (
+                      <option key={a.id} value={a.name} />
+                    ))}
+                  </datalist>
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Email
                 </label>
                 <input
-                  type="text"
-                  value={title}
-                  onChange={e => setTitle(e.target.value)}
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
                   className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
                 />
               </div>
@@ -346,6 +415,19 @@ export const CreateLeadView: React.FC = () => {
                 />
               </div>
 
+              {/* Other Phone */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Other Phone
+                </label>
+                <input
+                  type="text"
+                  value={otherPhone}
+                  onChange={e => setOtherPhone(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
+
               {/* Mobile */}
               <div className="flex items-center">
                 <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
@@ -355,6 +437,19 @@ export const CreateLeadView: React.FC = () => {
                   type="text"
                   value={mobile}
                   onChange={e => setMobile(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Assistant */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Assistant
+                </label>
+                <input
+                  type="text"
+                  value={assistant}
+                  onChange={e => setAssistant(e.target.value)}
                   className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
                 />
               </div>
@@ -389,114 +484,10 @@ export const CreateLeadView: React.FC = () => {
                   <option value="Google+">Google+</option>
                 </select>
               </div>
-
-              {/* Industry */}
-              <div className="flex items-center">
-                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                  Industry
-                </label>
-                <select
-                  value={industry}
-                  onChange={e => setIndustry(e.target.value)}
-                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-                >
-                  <option value="-None-">-None-</option>
-                  <option value="ASP">ASP (Application Service Provider)</option>
-                  <option value="Data/Telecom OEM">Data/Telecom OEM</option>
-                  <option value="Enterprise">Enterprise</option>
-                  <option value="ERP">ERP</option>
-                  <option value="Government/Military">Government/Military</option>
-                  <option value="Large Enterprise">Large Enterprise</option>
-                  <option value="Management ISV">Management ISV</option>
-                  <option value="MSP">MSP (Management Service Provider)</option>
-                  <option value="Network Storage">Network Storage</option>
-                  <option value="Non-Profit">Non-Profit</option>
-                  <option value="Optical Networking">Optical Networking</option>
-                  <option value="Service Provider">Service Provider</option>
-                  <option value="Small/Medium Enterprise">Small/Medium Enterprise</option>
-                  <option value="Storage Equipment">Storage Equipment</option>
-                  <option value="Storage Service Provider">Storage Service Provider</option>
-                  <option value="Systems Integrator">Systems Integrator</option>
-                  <option value="Wireless">Wireless</option>
-                  <option value="Real Estate">Real Estate</option>
-                  <option value="IT Services">IT Services</option>
-                  <option value="Finance">Finance</option>
-                  <option value="Healthcare">Healthcare</option>
-                  <option value="Retail">Retail</option>
-                </select>
-              </div>
-
-              {/* Annual Revenue */}
-              <div className="flex items-center">
-                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                  Annual Revenue
-                </label>
-                <div className="flex-1 flex items-center relative">
-                  <div className="flex items-center w-full border border-slate-300 dark:border-slate-700 rounded overflow-hidden bg-white dark:bg-slate-800 focus-within:border-blue-500">
-                    <span className="px-2.5 py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-semibold border-r border-slate-300 dark:border-slate-700">
-                      Rs.
-                    </span>
-                    <input
-                      type="text"
-                      value={annualRevenue}
-                      onChange={e => setAnnualRevenue(e.target.value)}
-                      placeholder="e.g. 50,00,000"
-                      className="flex-1 px-2.5 py-1.5 bg-transparent text-slate-800 dark:text-slate-200 outline-none"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    title="Estimated annual gross revenue generated by company."
-                    className="ml-2 text-slate-400 hover:text-slate-600"
-                  >
-                    <Info className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Email Opt Out */}
-              <div className="flex items-center">
-                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                  Email Opt Out
-                </label>
-                <div className="flex-1">
-                  <input
-                    type="checkbox"
-                    checked={emailOptOut}
-                    onChange={e => setEmailOptOut(e.target.checked)}
-                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-700"
-                  />
-                </div>
-              </div>
             </div>
 
             {/* RIGHT COLUMN */}
             <div className="space-y-3.5">
-              {/* Company (Mandatory) */}
-              <div className="flex items-center">
-                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400 flex items-center justify-end">
-                  Company
-                </label>
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    value={company}
-                    onChange={e => {
-                      setCompany(e.target.value);
-                      if (errors.company) setErrors(prev => ({ ...prev, company: undefined }));
-                    }}
-                    className={`w-full px-2.5 py-1.5 bg-white dark:bg-slate-800 border-l-4 border-l-red-500 border border-slate-300 dark:border-slate-700 rounded-r text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500 ${
-                      errors.company ? 'border-red-500' : ''
-                    }`}
-                  />
-                  {errors.company && (
-                    <span className="text-[10px] text-red-500 absolute -bottom-4 left-0">
-                      {errors.company}
-                    </span>
-                  )}
-                </div>
-              </div>
-
               {/* Last Name (Mandatory) */}
               <div className="flex items-center">
                 <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400 flex items-center justify-end">
@@ -522,15 +513,61 @@ export const CreateLeadView: React.FC = () => {
                 </div>
               </div>
 
-              {/* Email */}
+              {/* Vendor Name */}
               <div className="flex items-center">
                 <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                  Email
+                  Vendor Name
                 </label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  type="text"
+                  value={vendorName}
+                  onChange={e => setVendorName(e.target.value)}
+                  placeholder="Associated Vendor"
+                  list="vendor-suggestions"
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+                <datalist id="vendor-suggestions">
+                  {vendors.map(v => (
+                    <option key={v.id} value={v.name} />
+                  ))}
+                </datalist>
+              </div>
+
+              {/* Title */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Department */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Department
+                </label>
+                <input
+                  type="text"
+                  value={department}
+                  onChange={e => setDepartment(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Home Phone */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Home Phone
+                </label>
+                <input
+                  type="text"
+                  value={homePhone}
+                  onChange={e => setHomePhone(e.target.value)}
                   className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
                 />
               </div>
@@ -548,74 +585,46 @@ export const CreateLeadView: React.FC = () => {
                 />
               </div>
 
-              {/* Website */}
+              {/* Date of Birth */}
               <div className="flex items-center">
                 <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                  Website
+                  Date of Birth
+                </label>
+                <input
+                  type="date"
+                  value={dateOfBirth}
+                  onChange={e => setDateOfBirth(e.target.value)}
+                  placeholder="DD/MM/YYYY"
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Asst Phone */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Asst Phone
                 </label>
                 <input
                   type="text"
-                  value={website}
-                  onChange={e => setWebsite(e.target.value)}
-                  placeholder="https://example.com"
+                  value={asstPhone}
+                  onChange={e => setAsstPhone(e.target.value)}
                   className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
                 />
               </div>
 
-              {/* Lead Status */}
+              {/* Email Opt Out */}
               <div className="flex items-center">
                 <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                  Lead Status
+                  Email Opt Out
                 </label>
-                <select
-                  value={leadStatus}
-                  onChange={e => setLeadStatus(e.target.value)}
-                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-                >
-                  <option value="-None-">-None-</option>
-                  <option value="Attempted to Contact">Attempted to Contact</option>
-                  <option value="Cold">Cold</option>
-                  <option value="Contact in Future">Contact in Future</option>
-                  <option value="Contacted">Contacted</option>
-                  <option value="Junk Lead">Junk Lead</option>
-                  <option value="Lost Lead">Lost Lead</option>
-                  <option value="Not Contacted">Not Contacted</option>
-                  <option value="Pre-Qualified">Pre-Qualified</option>
-                  <option value="Qualified">Qualified</option>
-                </select>
-              </div>
-
-              {/* No. of Employees */}
-              <div className="flex items-center">
-                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                  No. of Employees
-                </label>
-                <input
-                  type="number"
-                  value={noOfEmployees}
-                  onChange={e => setNoOfEmployees(e.target.value)}
-                  placeholder="e.g. 150"
-                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-                />
-              </div>
-
-              {/* Rating */}
-              <div className="flex items-center">
-                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                  Rating
-                </label>
-                <select
-                  value={rating}
-                  onChange={e => setRating(e.target.value)}
-                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-                >
-                  <option value="-None-">-None-</option>
-                  <option value="Acquired">Acquired</option>
-                  <option value="Active">Active</option>
-                  <option value="Market Failed">Market Failed</option>
-                  <option value="Project Cancelled">Project Cancelled</option>
-                  <option value="Shut Down">Shut Down</option>
-                </select>
+                <div className="flex-1">
+                  <input
+                    type="checkbox"
+                    checked={emailOptOut}
+                    onChange={e => setEmailOptOut(e.target.checked)}
+                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-700"
+                  />
+                </div>
               </div>
 
               {/* Skype ID */}
@@ -662,6 +671,20 @@ export const CreateLeadView: React.FC = () => {
                   />
                 </div>
               </div>
+
+              {/* Reporting To */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Reporting To
+                </label>
+                <input
+                  type="text"
+                  value={reportingTo}
+                  onChange={e => setReportingTo(e.target.value)}
+                  placeholder="Manager / Executive"
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -674,130 +697,286 @@ export const CreateLeadView: React.FC = () => {
             </h2>
           </div>
 
-          <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50/50 dark:bg-slate-800/30 space-y-3.5 text-xs max-w-3xl">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-700/60">
-              <span className="font-bold text-slate-700 dark:text-slate-300">Address</span>
-              <button
-                type="button"
-                onClick={clearAddress}
-                className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
-              >
-                Clear All
-              </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Mailing Address Card */}
+            <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50/50 dark:bg-slate-800/30 space-y-3 text-xs">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-700/60">
+                <span className="font-bold text-slate-700 dark:text-slate-300">Mailing Address</span>
+                <button
+                  type="button"
+                  onClick={clearMailingAddress}
+                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                >
+                  Clear All
+                </button>
+              </div>
+
+              {/* Country / Region */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Country / Region
+                </label>
+                <select
+                  value={country}
+                  onChange={e => setCountry(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                >
+                  <option value="-None-">-None-</option>
+                  <option value="India">India</option>
+                  <option value="United States">United States</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="United Arab Emirates">United Arab Emirates</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="Japan">Japan</option>
+                </select>
+              </div>
+
+              {/* Flat / House No./ Building */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Flat / House No.
+                </label>
+                <input
+                  type="text"
+                  value={flatHouseBuilding}
+                  onChange={e => setFlatHouseBuilding(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Street Address */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Street Address
+                </label>
+                <input
+                  type="text"
+                  value={streetAddress}
+                  onChange={e => setStreetAddress(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* City */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  City
+                </label>
+                <input
+                  type="text"
+                  value={city}
+                  onChange={e => setCity(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* State / Province */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  State / Province
+                </label>
+                <select
+                  value={stateProvince}
+                  onChange={e => setStateProvince(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                >
+                  <option value="-None-">-None-</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Tamil Nadu">Tamil Nadu</option>
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Telangana">Telangana</option>
+                  <option value="Haryana">Haryana</option>
+                  <option value="West Bengal">West Bengal</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                </select>
+              </div>
+
+              {/* Zip / Postal Code */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Zip / Postal Code
+                </label>
+                <input
+                  type="text"
+                  value={zipPostalCode}
+                  onChange={e => setZipPostalCode(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Coordinates */}
+              <div className="flex items-center space-x-2">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Coordinates
+                </label>
+                <input
+                  type="text"
+                  value={latitude}
+                  onChange={e => setLatitude(e.target.value)}
+                  placeholder="Latitude"
+                  className="flex-1 px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+                <input
+                  type="text"
+                  value={longitude}
+                  onChange={e => setLongitude(e.target.value)}
+                  placeholder="Longitude"
+                  className="flex-1 px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
             </div>
 
-            {/* Country / Region */}
-            <div className="flex items-center">
-              <label className="w-48 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                Country / Region
-              </label>
-              <select
-                value={country}
-                onChange={e => setCountry(e.target.value)}
-                className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-              >
-                <option value="-None-">-None-</option>
-                <option value="India">India</option>
-                <option value="United States">United States</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="Canada">Canada</option>
-                <option value="Australia">Australia</option>
-                <option value="Germany">Germany</option>
-                <option value="France">France</option>
-                <option value="United Arab Emirates">United Arab Emirates</option>
-                <option value="Singapore">Singapore</option>
-                <option value="Japan">Japan</option>
-              </select>
-            </div>
+            {/* Other Address Card */}
+            <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50/50 dark:bg-slate-800/30 space-y-3 text-xs">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-700/60">
+                <div className="flex items-center space-x-2">
+                  <span className="font-bold text-slate-700 dark:text-slate-300">Other Address</span>
+                  <button
+                    type="button"
+                    onClick={copyMailingToOther}
+                    className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+                    title="Copy Mailing Address into Other Address"
+                  >
+                    <Copy className="w-3 h-3" />
+                    <span>Copy Mailing</span>
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={clearOtherAddress}
+                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                >
+                  Clear All
+                </button>
+              </div>
 
-            {/* Flat / House No./ Building / Apartment Name */}
-            <div className="flex items-center">
-              <label className="w-48 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                Flat / House No./ Building / Apartment Name
-              </label>
-              <input
-                type="text"
-                value={flatHouseBuilding}
-                onChange={e => setFlatHouseBuilding(e.target.value)}
-                className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-              />
-            </div>
+              {/* Country / Region */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Country / Region
+                </label>
+                <select
+                  value={otherCountry}
+                  onChange={e => setOtherCountry(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                >
+                  <option value="-None-">-None-</option>
+                  <option value="India">India</option>
+                  <option value="United States">United States</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="United Arab Emirates">United Arab Emirates</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="Japan">Japan</option>
+                </select>
+              </div>
 
-            {/* Street Address */}
-            <div className="flex items-center">
-              <label className="w-48 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                Street Address
-              </label>
-              <input
-                type="text"
-                value={streetAddress}
-                onChange={e => setStreetAddress(e.target.value)}
-                className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-              />
-            </div>
+              {/* Flat / House No./ Building */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Flat / House No.
+                </label>
+                <input
+                  type="text"
+                  value={otherFlatHouseBuilding}
+                  onChange={e => setOtherFlatHouseBuilding(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
 
-            {/* City */}
-            <div className="flex items-center">
-              <label className="w-48 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                City
-              </label>
-              <input
-                type="text"
-                value={city}
-                onChange={e => setCity(e.target.value)}
-                className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-              />
-            </div>
+              {/* Street Address */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Street Address
+                </label>
+                <input
+                  type="text"
+                  value={otherStreetAddress}
+                  onChange={e => setOtherStreetAddress(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
 
-            {/* State / Province */}
-            <div className="flex items-center">
-              <label className="w-48 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                State / Province
-              </label>
-              <select
-                value={stateProvince}
-                onChange={e => setStateProvince(e.target.value)}
-                className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-              >
-                <option value="-None-">-None-</option>
-                <option value="Maharashtra">Maharashtra</option>
-                <option value="Delhi">Delhi</option>
-                <option value="Karnataka">Karnataka</option>
-                <option value="Tamil Nadu">Tamil Nadu</option>
-                <option value="Uttar Pradesh">Uttar Pradesh</option>
-                <option value="Gujarat">Gujarat</option>
-                <option value="Telangana">Telangana</option>
-                <option value="Haryana">Haryana</option>
-                <option value="West Bengal">West Bengal</option>
-                <option value="Rajasthan">Rajasthan</option>
-              </select>
-            </div>
+              {/* City */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  City
+                </label>
+                <input
+                  type="text"
+                  value={otherCity}
+                  onChange={e => setOtherCity(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
 
-            {/* Zip / Postal Code */}
-            <div className="flex items-center">
-              <label className="w-48 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                Zip / Postal Code
-              </label>
-              <input
-                type="text"
-                value={zipPostalCode}
-                onChange={e => setZipPostalCode(e.target.value)}
-                className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-              />
-            </div>
+              {/* State / Province */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  State / Province
+                </label>
+                <select
+                  value={otherStateProvince}
+                  onChange={e => setOtherStateProvince(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                >
+                  <option value="-None-">-None-</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Tamil Nadu">Tamil Nadu</option>
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Telangana">Telangana</option>
+                  <option value="Haryana">Haryana</option>
+                  <option value="West Bengal">West Bengal</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                </select>
+              </div>
 
-            {/* Coordinates */}
-            <div className="flex items-center">
-              <label className="w-48 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
-                Coordinates
-              </label>
-              <input
-                type="text"
-                value={coordinates}
-                onChange={e => setCoordinates(e.target.value)}
-                placeholder="Latitude, Longitude (e.g. 19.0760, 72.8777)"
-                className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
-              />
+              {/* Zip / Postal Code */}
+              <div className="flex items-center">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Zip / Postal Code
+                </label>
+                <input
+                  type="text"
+                  value={otherZipPostalCode}
+                  onChange={e => setOtherZipPostalCode(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Coordinates */}
+              <div className="flex items-center space-x-2">
+                <label className="w-36 text-right pr-4 font-medium text-slate-600 dark:text-slate-400">
+                  Coordinates
+                </label>
+                <input
+                  type="text"
+                  value={otherLatitude}
+                  onChange={e => setOtherLatitude(e.target.value)}
+                  placeholder="Latitude"
+                  className="flex-1 px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+                <input
+                  type="text"
+                  value={otherLongitude}
+                  onChange={e => setOtherLongitude(e.target.value)}
+                  placeholder="Longitude"
+                  className="flex-1 px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -818,7 +997,7 @@ export const CreateLeadView: React.FC = () => {
               rows={4}
               value={description}
               onChange={e => setDescription(e.target.value)}
-              placeholder="Enter comprehensive notes, discussions, lead requirements, or background context..."
+              placeholder="Enter contact notes, background details, communication preferences..."
               className="flex-1 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 outline-none focus:border-blue-500 resize-y"
             />
           </div>
@@ -837,13 +1016,13 @@ export const CreateLeadView: React.FC = () => {
           >
             <option value="Standard View">Standard View</option>
             <option value="Quick Create View">Quick Create View</option>
-            <option value="Enterprise Layout">Enterprise Layout</option>
+            <option value="Executive View">Executive View</option>
           </select>
           <a
             href="#create-custom-form"
             onClick={e => {
               e.preventDefault();
-              alert('Custom Form Builder: Create multiple form views tailored for specific sales roles or territories.');
+              alert('Custom Form Builder: Create multiple form views tailored for specific roles.');
             }}
             className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
           >
@@ -914,10 +1093,10 @@ export const CreateLeadView: React.FC = () => {
               <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-lg text-blue-700 dark:text-blue-300 space-y-1">
                 <p className="font-bold flex items-center gap-1">
                   <Sparkles className="w-3.5 h-3.5" />
-                  Client Scripts for "Create Lead" Page
+                  Client Scripts for "Create Contact" Page
                 </p>
                 <p className="text-[11px] leading-relaxed">
-                  Execute custom JavaScript logic upon page load, field value modifications, or form submission.
+                  Execute custom JavaScript logic upon field modifications or Contact form validation.
                 </p>
               </div>
 
@@ -926,10 +1105,10 @@ export const CreateLeadView: React.FC = () => {
                   Active Event Listeners:
                 </label>
                 <div className="p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 font-mono text-[11px] text-slate-700 dark:text-slate-300">
-                  ⚡ onChange(Company) ➔ Auto-suggest industry & website
+                  ⚡ onChange(Account Name) ➔ Auto-populate Mailing Address
                 </div>
                 <div className="p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 font-mono text-[11px] text-slate-700 dark:text-slate-300">
-                  ⚡ onSave() ➔ Mandatory field validations & phone normalization
+                  ⚡ onSave() ➔ Format international phone numbers
                 </div>
               </div>
 
@@ -940,9 +1119,9 @@ export const CreateLeadView: React.FC = () => {
                 <textarea
                   rows={8}
                   defaultValue={`// Example Zoho Client Script
-ZDK.Page.getField('Company').addEventListener('onChange', function(e) {
-  var comp = ZDK.Page.getField('Company').getValue();
-  console.log('Lead Company updated to: ' + comp);
+ZDK.Page.getField('Account_Name').addEventListener('onChange', function(e) {
+  var acc = ZDK.Page.getField('Account_Name').getValue();
+  console.log('Contact linked to Account: ' + acc);
 });`}
                   className="w-full font-mono text-[11px] p-2.5 rounded border border-slate-300 dark:border-slate-700 bg-slate-900 text-emerald-400 outline-none"
                 />
@@ -965,7 +1144,7 @@ ZDK.Page.getField('Company').addEventListener('onChange', function(e) {
       <div className="shrink-0 h-7 bg-[#1c2438] text-slate-300 px-4 flex items-center justify-between text-[11px] select-none border-t border-slate-800">
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => alert('My Pins: Quick access to pinned leads, accounts, and deals.')}
+            onClick={() => alert('My Pins: Quick access to pinned records.')}
             className="flex items-center space-x-1 hover:text-white transition-colors cursor-pointer"
           >
             <Pin className="w-3 h-3" />
@@ -973,7 +1152,7 @@ ZDK.Page.getField('Company').addEventListener('onChange', function(e) {
           </button>
           <span className="text-slate-600">|</span>
           <button
-            onClick={() => alert('Chats: Open Zoho Cliq / internal team chat channels.')}
+            onClick={() => alert('Chats: Open team discussions.')}
             className="flex items-center space-x-1 hover:text-white transition-colors cursor-pointer"
           >
             <MessageSquare className="w-3 h-3" />
@@ -990,7 +1169,7 @@ ZDK.Page.getField('Company').addEventListener('onChange', function(e) {
         </div>
 
         <div className="text-slate-400 text-[10px]">
-          Zoho CRM Layout Engine v2025 • Standard Lead Form
+          Zoho CRM Layout Engine v2025 • Standard Contact Form
         </div>
       </div>
     </div>

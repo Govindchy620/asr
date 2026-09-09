@@ -133,13 +133,7 @@ export const ModuleHeader: React.FC<ModuleHeaderProps> = ({
 
         {/* Primary Action Button */}
         <button
-          onClick={() => {
-            if (activeModule === 'leads') {
-              setViewMode('create');
-            } else {
-              openCreateModal();
-            }
-          }}
+          onClick={() => setViewMode('create')}
           className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-semibold rounded-lg shadow-sm shadow-blue-500/20 transition-all cursor-pointer whitespace-nowrap"
         >
           <Plus className="w-3.5 h-3.5" />

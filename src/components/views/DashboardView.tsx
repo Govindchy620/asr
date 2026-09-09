@@ -130,7 +130,7 @@ export const DashboardView: React.FC = () => {
             {leads.length}
           </div>
           <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-2">
-            Zia Avg Score: 76 / 100
+            Novi Avg Score: 76 / 100
           </div>
         </div>
       </div>

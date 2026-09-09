@@ -1,5 +1,6 @@
 export type ModuleType =
   | 'home'
+  | 'workqueue'
   | 'reports'
   | 'analytics'
   | 'agents'
@@ -73,31 +74,98 @@ export interface Lead {
 export interface Contact {
   id: string;
   name: string;
+  salutation?: string;
+  firstName?: string;
+  lastName?: string;
+  accountId?: string;
   accountName: string;
+  vendorName?: string;
   email: string;
+  secondaryEmail?: string;
   phone: string;
-  department: string;
+  otherPhone?: string;
+  mobile?: string;
+  homePhone?: string;
+  fax?: string;
+  assistant?: string;
+  asstPhone?: string;
+  dateOfBirth?: string;
   leadSource: string;
   owner: string;
   title: string;
+  department: string;
+  emailOptOut?: boolean;
+  skypeId?: string;
+  twitter?: string;
+  reportingTo?: string;
+  contactImage?: string;
+  // Mailing Address
+  country?: string;
+  flatHouseBuilding?: string;
+  streetAddress?: string;
+  city?: string;
+  stateProvince?: string;
+  zipPostalCode?: string;
+  latitude?: string;
+  longitude?: string;
+  // Other Address
+  otherCountry?: string;
+  otherFlatHouseBuilding?: string;
+  otherStreetAddress?: string;
+  otherCity?: string;
+  otherStateProvince?: string;
+  otherZipPostalCode?: string;
+  otherLatitude?: string;
+  otherLongitude?: string;
+  description?: string;
 }
 
 export interface Account {
   id: string;
   name: string;
+  accountImage?: string;
+  accountSite?: string;
+  parentAccount?: string;
+  accountNumber?: string;
+  accountType?: string;
   phone: string;
+  fax?: string;
   website: string;
+  tickerSymbol?: string;
+  ownership?: string;
   industry: string;
-  annualRevenue: number;
+  employees?: string;
+  annualRevenue: number | string;
+  sicCode?: string;
+  rating?: string;
   owner: string;
+  // Billing Address
+  billingCountry?: string;
+  billingFlatHouseBuilding?: string;
+  billingStreetAddress?: string;
   billingCity: string;
-  billingCountry: string;
+  billingStateProvince?: string;
+  billingZipPostalCode?: string;
+  billingLatitude?: string;
+  billingLongitude?: string;
+  // Shipping Address
+  shippingCountry?: string;
+  shippingFlatHouseBuilding?: string;
+  shippingStreetAddress?: string;
+  shippingCity?: string;
+  shippingStateProvince?: string;
+  shippingZipPostalCode?: string;
+  shippingLatitude?: string;
+  shippingLongitude?: string;
+  description?: string;
 }
 
 export interface Deal {
   id: string;
   name: string;
+  accountId?: string;
   accountName: string;
+  contactId?: string;
   contactName: string;
   amount: number;
   stage: 'Qualification' | 'Needs Analysis' | 'Value Proposition' | 'Proposal/Quote' | 'Negotiation/Review' | 'Closed Won' | 'Closed Lost';
